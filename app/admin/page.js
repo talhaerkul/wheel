@@ -111,7 +111,9 @@ export default function AdminPage() {
     .filter(
       (user) =>
         searchTerm === "" ||
-        user.prize.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.instagramUsername
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
@@ -198,7 +200,7 @@ export default function AdminPage() {
           <Input
             id="search"
             type="text"
-            placeholder="Ödül adı, Instagram veya LinkedIn kullanıcı adı"
+            placeholder="Ad, soyad, e-posta, bölüm, Instagram veya LinkedIn kullanıcı adı"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -217,7 +219,11 @@ export default function AdminPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>İsim</TableHead>
+              <TableHead>Ad Soyad</TableHead>
+              <TableHead>Telefon</TableHead>
+              <TableHead>E-posta</TableHead>
+              <TableHead>Bölüm</TableHead>
+              <TableHead>Sınıf</TableHead>
               <TableHead>Instagram</TableHead>
               <TableHead>LinkedIn</TableHead>
               <TableHead>Ödül</TableHead>
@@ -229,32 +235,13 @@ export default function AdminPage() {
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>{user.name}</TableCell>
+                <TableCell>{user.phone}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.department}</TableCell>
+                <TableCell>{user.year}</TableCell>
                 <TableCell>{user.instagramUsername}</TableCell>
                 <TableCell>{user.linkedinUsername}</TableCell>
-                <TableCell>
-                  <Select
-                    value={user.prize}
-                    onValueChange={(value) =>
-                      updateUser(
-                        user.id,
-                        value,
-                        user.instaFollow,
-                        user.linkedinFollow
-                      )
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue>{user.prize}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {prizes.map((prize) => (
-                        <SelectItem key={prize.id} value={prize.name}>
-                          {prize.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </TableCell>
+                <TableCell>{user.prize}</TableCell>
                 <TableCell>
                   <Select
                     value={user.instaFollow ? "Evet" : "Hayır"}
