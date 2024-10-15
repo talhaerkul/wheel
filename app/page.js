@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Instagram, Linkedin, X } from "lucide-react";
 import SpinningWheel from "@/components/SpinningWheel";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -188,28 +189,53 @@ export default function Home() {
       )}
 
       {showPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl relative">
-            <Button
-              className="absolute top-2 right-2"
-              variant="ghost"
-              size="icon"
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white p-8 rounded-2xl shadow-2xl relative max-w-md w-full mx-4"
+          >
+            <button
+              className="absolute bg-transparent rounded-full top-4 right-4"
               onClick={closePopup}
             >
-              <X className="h-4 w-4" />
-            </Button>
-            <h2 className="text-xl font-bold mb-4">
-              {popupContent.type === "instagram" ? "Instagram" : "LinkedIn"}'de
-              Takip Et
-            </h2>
-            <p className="mb-4">
-              Yeni açılan sekmede bizi takip ettiyseniz, lütfen onaylayın.
-            </p>
-            <Button className="w-full" onClick={closePopup}>
-              Takip Ettim
-            </Button>
-          </div>
-        </div>
+              <X className="h-6 w-6" />
+              <span className="sr-only">Close</span>
+            </button>
+            <div className="text-center">
+              {popupContent.type === "instagram" ? (
+                <Instagram className="h-12 w-12 mx-auto mb-4 text-pink-500" />
+              ) : (
+                <Linkedin className="h-12 w-12 mx-auto mb-4 text-blue-500" />
+              )}
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">
+                {popupContent.type === "instagram" ? "Instagram" : "LinkedIn"}
+                'de Takip Et
+              </h2>
+              <p className="mb-6 text-gray-600">
+                Yeni açılan sekmede bizi takip ettiyseniz, lütfen onaylayın.
+              </p>
+              <div className="flex justify-center items-center w-full gap-4">
+                <Button className="w-full text-lg py-6" onClick={closePopup}>
+                  Takip Ettim
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full text-lg py-6"
+                  onClick={closePopup}
+                >
+                  Daha Sonra
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

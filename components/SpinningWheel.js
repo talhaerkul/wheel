@@ -12,6 +12,7 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
   const [showModal, setShowModal] = useState(false);
   const [winningPrize, setWinningPrize] = useState(null);
 
+  // Generate colors for each prize
   const colors = prizes.map((_, index) => {
     const hue = (index * 360) / prizes.length;
     return {
@@ -42,8 +43,9 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
       ctx.lineWidth = 2;
       ctx.stroke();
 
+      // Draw text
       ctx.save();
-      ctx.rotate((i + 0.5) * arcSize);
+      ctx.rotate(i * arcSize + arcSize / 2);
       ctx.textAlign = "right";
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 16px sans-serif";
@@ -55,6 +57,7 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
       ctx.restore();
     }
 
+    // Draw center circle
     ctx.beginPath();
     ctx.arc(0, 0, 30, 0, 2 * Math.PI);
     ctx.fillStyle = "#f3f4f6";
@@ -114,10 +117,13 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
       } else {
         setIsSpinning(false);
 
+        // Corrected index calculation
         const degrees = newAngle % 360;
         const numOptions = prizes.length;
         const arcSize = 360 / numOptions;
-        const index = Math.floor(((360 - degrees) % 360) / arcSize);
+        const adjustedDegrees = (degrees + arcSize / 2) % 360;
+        const index =
+          Math.floor((360 - adjustedDegrees) / arcSize) % numOptions;
         const prize = prizes[index];
         setWinningPrize(prize);
         setShowModal(true);
@@ -144,7 +150,18 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
           height={500}
           className="rounded-full shadow-lg"
         />
-        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[25px] border-r-[25px] border-t-[50px] border-l-transparent border-r-transparent border-t-red-500 filter drop-shadow-md" />
+        {/* Correct Arrow Position */}
+        <div
+          className="absolute top-10 rotate-180 left-1/2 transform -translate-x-1/2 -translate-y-full"
+          style={{
+            width: 0,
+            height: 0,
+            borderLeft: "25px solid transparent",
+            borderRight: "25px solid transparent",
+            borderBottom: "50px solid red",
+            filter: "drop-shadow(0 0 5px rgba(0,0,0,0.5))",
+          }}
+        />
       </div>
       <motion.button
         onClick={spinWheel}
@@ -187,10 +204,10 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
                 <X size={24} />
               </button>
               <h2 className="text-2xl font-bold mb-4 text-center">
-                Tebrikler!
+                Congratulations!
               </h2>
               <p className="text-lg text-center">
-                Kazandığınız ödül:{" "}
+                You won:{" "}
                 <span className="font-semibold text-green-500">
                   {winningPrize?.name}
                 </span>
