@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
+import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
   const canvasRef = useRef(null);
@@ -89,7 +89,7 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
 
     ctx.save();
     ctx.translate(width / 2, height / 2);
-    ctx.rotate((angle * Math.PI) / 180);
+    ctx.rotate((-angle * Math.PI) / 180); // Invert the rotation
     ctx.translate(-width / 2, -height / 2);
     drawWheel(ctx, width, height);
     ctx.restore();
@@ -121,9 +121,9 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
         const degrees = newAngle % 360;
         const numOptions = prizes.length;
         const arcSize = 360 / numOptions;
-        const adjustedDegrees = (degrees + arcSize / 2) % 360;
-        const index =
-          Math.floor((360 - adjustedDegrees) / arcSize) % numOptions;
+        const adjustedDegrees = (degrees + 90) % 360;
+        const index = Math.floor(adjustedDegrees / arcSize) % numOptions;
+
         const prize = prizes[index];
         setWinningPrize(prize);
         setShowModal(true);
@@ -152,7 +152,7 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
         />
         {/* Correct Arrow Position */}
         <div
-          className="absolute top-10 rotate-180 left-1/2 transform -translate-x-1/2 -translate-y-full"
+          className="absolute bottom-[33%] rotate-180 left-1/2 transform -translate-x-1/2 -translate-y-full"
           style={{
             width: 0,
             height: 0,
@@ -180,7 +180,7 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
               }
         }
       >
-        {isSpinning ? "Çark Dönüyor..." : "Çarkı Çevir"}
+        {isSpinning ? "Çark Dönüyor..." : "İnovasyon Çarkını Çevir"}
       </motion.button>
 
       <AnimatePresence>
@@ -204,13 +204,13 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
                 <X size={24} />
               </button>
               <h2 className="text-2xl font-bold mb-4 text-center">
-                Congratulations!
+                İnovasyonla kazandın, Tebrikler!
               </h2>
               <p className="text-lg text-center">
-                You won:{" "}
                 <span className="font-semibold text-green-500">
-                  {winningPrize?.name}
+                  {winningPrize?.name}{" "}
                 </span>
+                Kazandınız
               </p>
             </motion.div>
           </motion.div>

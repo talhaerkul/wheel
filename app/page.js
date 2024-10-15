@@ -249,7 +249,7 @@ export default function Home() {
         Çark Çevir ve Kazan!
       </h1>
 
-      <div className="max-w-lg grid grid-cols-2 gap-4 mx-auto mb-8">
+      <div className="max-w-lg grid lg:grid-cols-2 gap-4 mx-auto mb-8">
         <div className="mx-2">
           <Label htmlFor="name">Ad</Label>
           <Input
@@ -271,7 +271,7 @@ export default function Home() {
         </div>
 
         <div className="mx-2">
-          <Label htmlFor="phone">Telefon</Label>
+          <Label htmlFor="phone">Telefon (0 olmadan)</Label>
           <Input
             id="phone"
             value={phone}
@@ -364,7 +364,7 @@ export default function Home() {
       </div>
 
       <div className=" mb-8">
-        <div className="flex justify-center space-x-4">
+        <div className="flex flex-col gap-4 items-center lg:flex-row justify-start lg:justify-center lg:space-x-4">
           <Button
             className="flex items-center"
             onClick={() => handleSocialFollow("instagram")}
