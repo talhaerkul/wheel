@@ -228,6 +228,7 @@ export default function Home() {
               <SelectValue placeholder="Sınıfınızı seçin" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="hazırlık">Hazırlık</SelectItem>
               <SelectItem value="1">1. Sınıf</SelectItem>
               <SelectItem value="2">2. Sınıf</SelectItem>
               <SelectItem value="3">3. Sınıf</SelectItem>
