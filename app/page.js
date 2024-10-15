@@ -244,9 +244,9 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Çark Çevir ve Kazan!
+    <div className="container mx-auto px-4 pt-10 pb-20">
+      <h1 className="text-lg lg:text-3xl font-bold mb-6 text-center">
+        İnovasyon Çarkını Çevir ve Kazan!
       </h1>
 
       <div className="max-w-lg grid lg:grid-cols-2 gap-4 mx-auto mb-8">

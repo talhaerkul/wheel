@@ -55,7 +55,6 @@ export default function AdminPage() {
   const addPrize = async (event) => {
     event.preventDefault();
 
-    // Ensure quantity is a valid number
     const quantity = parseInt(newPrize.quantity, 10);
     if (isNaN(quantity) || quantity < 1) {
       toast({
@@ -121,6 +120,26 @@ export default function AdminPage() {
     );
     if (response.ok) {
       fetchUsers();
+    }
+  };
+
+  const deleteUser = async (id) => {
+    const response = await fetch(
+      `https://generatech.app/wheel/api/users/${id}`,
+      { method: "DELETE" }
+    );
+    if (response.ok) {
+      fetchUsers();
+      toast({
+        title: "Kullanıcı silindi",
+        description: "Kullanıcı başarıyla silindi.",
+      });
+    } else {
+      toast({
+        title: "Hata",
+        description: "Kullanıcı silinirken bir hata oluştu.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -248,6 +267,7 @@ export default function AdminPage() {
               <TableHead>Ödül</TableHead>
               <TableHead>Instagram Takip</TableHead>
               <TableHead>LinkedIn Takip</TableHead>
+              <TableHead>İşlem</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -317,6 +337,14 @@ export default function AdminPage() {
                       <SelectItem value="Hayır">Hayır</SelectItem>
                     </SelectContent>
                   </Select>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="destructive"
+                    onClick={() => deleteUser(user.id)}
+                  >
+                    Sil
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
