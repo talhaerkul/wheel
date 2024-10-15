@@ -53,17 +53,36 @@ export default function AdminPage() {
 
   const addPrize = async (event) => {
     event.preventDefault();
+
+    // Ensure quantity is a valid number
+    const quantity = parseInt(newPrize.quantity, 10);
+    if (isNaN(quantity) || quantity < 1) {
+      toast({
+        title: "Hata",
+        description: "Lütfen geçerli bir adet giriniz.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const response = await fetch("https://generatech.app/wheel/api/prizes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newPrize),
+      body: JSON.stringify({ ...newPrize, quantity }),
     });
+
     if (response.ok) {
       fetchPrizes();
       setNewPrize({ name: "", quantity: 1 });
       toast({
         title: "Ödül eklendi",
         description: "Yeni ödül başarıyla eklendi.",
+      });
+    } else {
+      toast({
+        title: "Hata",
+        description: "Ödül eklenirken bir hata oluştu.",
+        variant: "destructive",
       });
     }
   };
@@ -152,7 +171,7 @@ export default function AdminPage() {
                 onChange={(e) =>
                   setNewPrize({
                     ...newPrize,
-                    quantity: parseInt(e.target.value),
+                    quantity: e.target.value,
                   })
                 }
                 required
@@ -173,22 +192,20 @@ export default function AdminPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {prizes.map((prize) => {
-              return (
-                <TableRow key={prize.id}>
-                  <TableCell>{prize.name}</TableCell>
-                  <TableCell>{prize.quantity}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="destructive"
-                      onClick={() => deletePrize(prize.id)}
-                    >
-                      Sil
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
+            {prizes.map((prize) => (
+              <TableRow key={prize.id}>
+                <TableCell>{prize.name}</TableCell>
+                <TableCell>{prize.quantity}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="destructive"
+                    onClick={() => deletePrize(prize.id)}
+                  >
+                    Sil
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </div>

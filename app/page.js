@@ -11,11 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { Instagram, Linkedin, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Instagram, Linkedin, Upload, X } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState, useRef } from "react";
 
 export default function Home() {
+  const { toast } = useToast();
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [phone, setPhone] = useState("");
@@ -37,6 +40,10 @@ export default function Home() {
     email: "",
     phone: "",
   });
+  const [dragActive, setDragActive] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     fetchPrizes();
@@ -151,6 +158,89 @@ export default function Home() {
     });
     setCanSpin(false);
     fetchUsers();
+  };
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFiles(e.dataTransfer.files);
+    }
+  };
+
+  const handleChange = (e) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      handleFiles(e.target.files);
+    }
+  };
+
+  const handleFiles = async (files) => {
+    const file = files[0];
+    if (file.type.startsWith("image/")) {
+      setIsUploading(true);
+      try {
+        await uploadImage(file);
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      } finally {
+        setIsUploading(false);
+      }
+    } else {
+      console.log("Invalid file type");
+    }
+  };
+
+  const uploadImage = async (file) => {
+    try {
+      // Simulating image upload
+      // In a real scenario, you would send the file to your server here
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const dataURL = URL.createObjectURL(file);
+      const response = await fetch(dataURL);
+
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append("image", blob, file.name);
+      setUploadedImage(dataURL);
+      const result = await fetch("https://generatech.app/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      toast({
+        title: "Upload successful",
+        description: "Your image has been uploaded.",
+      });
+    } catch (error) {
+      console.error("Image upload failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Upload failed",
+        description: "There was an error uploading your image.",
+      });
+      throw error;
+    }
+  };
+
+  const removeImage = () => {
+    setUploadedImage(null);
   };
 
   return (
@@ -273,23 +363,108 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="flex justify-center space-x-4 mb-8">
-        <Button
-          className="flex items-center"
-          onClick={() => handleSocialFollow("instagram")}
-          disabled={instagramFollowed}
-        >
-          <Instagram className="mr-2 h-4 w-4" />
-          {instagramFollowed ? "Takip Edildi" : "Instagram'da Takip Et"}
-        </Button>
-        <Button
-          className="flex items-center"
-          onClick={() => handleSocialFollow("linkedin")}
-          disabled={linkedinFollowed}
-        >
-          <Linkedin className="mr-2 h-4 w-4" />
-          {linkedinFollowed ? "Takip Edildi" : "LinkedIn'de Takip Et"}
-        </Button>
+      <div className=" mb-8">
+        <div className="flex justify-center space-x-4">
+          <Button
+            className="flex items-center"
+            onClick={() => handleSocialFollow("instagram")}
+            disabled={instagramFollowed}
+          >
+            <Instagram className="mr-2 h-4 w-4" />
+            {instagramFollowed ? "Takip Edildi" : "Instagram'da Takip Et"}
+          </Button>
+          <Button
+            className="flex items-center"
+            onClick={() => handleSocialFollow("linkedin")}
+            disabled={linkedinFollowed}
+          >
+            <Linkedin className="mr-2 h-4 w-4" />
+            {linkedinFollowed ? "Takip Edildi" : "LinkedIn'de Takip Et"}
+          </Button>
+        </div>
+
+        <div className="max-w-lg mx-auto mt-8 p-6 border rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            Standı ziyaret et ve ayna ile fotoğraf çekil
+          </h2>
+          <div className="space-y-4">
+            <div
+              className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
+                dragActive
+                  ? "border-primary bg-primary/10"
+                  : "border-gray-300 hover:border-primary"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => inputRef.current.click()}
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
+                className="hidden"
+                disabled={isUploading}
+              />
+              {uploadedImage ? (
+                <div className="relative">
+                  <Image
+                    src={uploadedImage}
+                    alt="Uploaded image"
+                    width={300}
+                    height={300}
+                    className="mx-auto rounded-lg"
+                  />
+                  <button
+                    className="absolute top-0 right-0 bg-primary text-white rounded-full p-1 cursor-pointer hover:bg-white hover:text-primary transition-colors duration-200"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeImage();
+                    }}
+                    disabled={isUploading}
+                  >
+                    <X className="h-6 w-6" />
+                    <span className="sr-only">Remove image</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-4">
+                  {isUploading ? (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-primary"
+                    >
+                      Uploading...
+                    </motion.div>
+                  ) : (
+                    <>
+                      <Upload className="h-10 w-10 text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-600">
+                        Fotoğrafı yüklemek için tıkla veya sürükle bırak
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        PNG, JPG or GIF (MAX. 800x400px)
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+            {uploadedImage && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="text-sm text-gray-500"
+              >
+                Fotoğraf yüklendi
+              </motion.div>
+            )}
+          </div>
+        </div>
       </div>
 
       {prizes.length > 0 && (
