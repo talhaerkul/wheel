@@ -64,8 +64,8 @@ export default function Home() {
   const handleSocialFollow = (type) => {
     const url =
       type === "instagram"
-        ? "https://www.instagram.com"
-        : "https://www.linkedin.com";
+        ? "https://www.instagram.com/zaiminovasyon/"
+        : "https://www.linkedin.com/company/zaiminovasyon/";
 
     window.open(url, "_blank", "noopener,noreferrer");
     setPopupContent({ type, url });
