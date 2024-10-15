@@ -28,7 +28,7 @@ export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [prizes, setPrizes] = useState([]);
   const [users, setUsers] = useState([]);
-  const [newPrize, setNewPrize] = useState({ name: "", priority: 1 });
+  const [newPrize, setNewPrize] = useState({ name: "", quantity: 1 });
   const [showOnlyFollowers, setShowOnlyFollowers] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -60,7 +60,7 @@ export default function AdminPage() {
     });
     if (response.ok) {
       fetchPrizes();
-      setNewPrize({ name: "", priority: 1 });
+      setNewPrize({ name: "", quantity: 1 });
       toast({
         title: "Ödül eklendi",
         description: "Yeni ödül başarıyla eklendi.",
@@ -142,15 +142,15 @@ export default function AdminPage() {
               />
             </div>
             <div className="w-24">
-              <Label htmlFor="prizePriority">Öncelik</Label>
+              <Label htmlFor="prizeQuantity">Adet</Label>
               <Input
-                id="prizePriority"
+                id="prizeQuantity"
                 type="number"
-                value={newPrize.priority}
+                value={newPrize.quantity}
                 onChange={(e) =>
                   setNewPrize({
                     ...newPrize,
-                    priority: parseInt(e.target.value),
+                    quantity: parseInt(e.target.value),
                   })
                 }
                 required
@@ -166,25 +166,27 @@ export default function AdminPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Ödül Adı</TableHead>
-              <TableHead>Öncelik</TableHead>
+              <TableHead>Adet</TableHead>
               <TableHead>İşlem</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {prizes.map((prize) => (
-              <TableRow key={prize.id}>
-                <TableCell>{prize.name}</TableCell>
-                <TableCell>{prize.priority}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="destructive"
-                    onClick={() => deletePrize(prize.id)}
-                  >
-                    Sil
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {prizes.map((prize) => {
+              return (
+                <TableRow key={prize.id}>
+                  <TableCell>{prize.name}</TableCell>
+                  <TableCell>{prize.quantity}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="destructive"
+                      onClick={() => deletePrize(prize.id)}
+                    >
+                      Sil
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

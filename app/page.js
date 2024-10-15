@@ -7,9 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Instagram, Linkedin, X } from "lucide-react";
 import SpinningWheel from "@/components/SpinningWheel";
 import { motion } from "framer-motion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Home() {
   const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [department, setDepartment] = useState("");
+  const [year, setYear] = useState("");
   const [instagramUsername, setInstagramUsername] = useState("");
   const [linkedinUsername, setLinkedinUsername] = useState("");
   const [instagramFollowed, setInstagramFollowed] = useState(false);
@@ -19,7 +31,12 @@ export default function Home() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState({ type: "", url: "" });
   const [users, setUsers] = useState([]);
-  const [errors, setErrors] = useState({ instagram: "", linkedin: "" });
+  const [errors, setErrors] = useState({
+    instagram: "",
+    linkedin: "",
+    email: "",
+    phone: "",
+  });
 
   useEffect(() => {
     fetchPrizes();
@@ -30,6 +47,11 @@ export default function Home() {
     updateCanSpin();
   }, [
     name,
+    surname,
+    phone,
+    email,
+    department,
+    year,
     instagramUsername,
     linkedinUsername,
     instagramFollowed,
@@ -52,12 +74,19 @@ export default function Home() {
   const updateCanSpin = () => {
     setCanSpin(
       name.trim() !== "" &&
+        surname.trim() !== "" &&
+        phone.trim() !== "" &&
+        email.trim() !== "" &&
+        department.trim() !== "" &&
+        year.trim() !== "" &&
         instagramUsername.trim() !== "" &&
         linkedinUsername.trim() !== "" &&
         instagramFollowed &&
         linkedinFollowed &&
         !errors.instagram &&
-        !errors.linkedin
+        !errors.linkedin &&
+        !errors.email &&
+        !errors.phone
     );
   };
 
@@ -83,15 +112,24 @@ export default function Home() {
 
   const handleInputChange = (setter, value, type) => {
     setter(value);
-    const existingUser = users.find((user) =>
-      type === "instagram"
-        ? user.instagramUsername === value
-        : user.linkedinUsername === value
-    );
-    setErrors((prev) => ({
-      ...prev,
-      [type]: existingUser ? `Bu ${type} kullanıcı adı zaten kullanılmış` : "",
-    }));
+    let error = "";
+    if (type === "instagram" || type === "linkedin") {
+      const existingUser = users.find((user) =>
+        type === "instagram"
+          ? user.instagramUsername === value
+          : user.linkedinUsername === value
+      );
+      error = existingUser ? `Bu ${type} kullanıcı adı zaten kullanılmış` : "";
+    } else if (type === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      error = !emailRegex.test(value) ? "Geçerli bir e-posta adresi girin" : "";
+    } else if (type === "phone") {
+      const phoneRegex = /^[0-9]{10}$/;
+      error = !phoneRegex.test(value)
+        ? "Geçerli bir telefon numarası girin"
+        : "";
+    }
+    setErrors((prev) => ({ ...prev, [type]: error }));
   };
 
   const handleSpin = async (prize) => {
@@ -99,7 +137,11 @@ export default function Home() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name,
+        name: `${name} ${surname}`,
+        phone,
+        email,
+        department,
+        year,
         instagramUsername,
         linkedinUsername,
         prize: prize.name,
@@ -119,13 +161,80 @@ export default function Home() {
 
       <div className="max-w-md mx-auto mb-8">
         <div className="mb-4">
-          <Label htmlFor="name">İsim</Label>
+          <Label htmlFor="name">Ad</Label>
           <Input
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="surname">Soyad</Label>
+          <Input
+            id="surname"
+            value={surname}
+            onChange={(e) => setSurname(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="phone">Telefon</Label>
+          <Input
+            id="phone"
+            value={phone}
+            onChange={(e) =>
+              handleInputChange(setPhone, e.target.value, "phone")
+            }
+            required
+          />
+          {errors.phone && (
+            <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="email">E-posta</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) =>
+              handleInputChange(setEmail, e.target.value, "email")
+            }
+            required
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="department">Bölüm</Label>
+          <Input
+            id="department"
+            value={department}
+            onChange={(e) => setDepartment(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="year">Sınıf</Label>
+          <Select value={year} onValueChange={setYear}>
+            <SelectTrigger>
+              <SelectValue placeholder="Sınıfınızı seçin" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1. Sınıf</SelectItem>
+              <SelectItem value="2">2. Sınıf</SelectItem>
+              <SelectItem value="3">3. Sınıf</SelectItem>
+              <SelectItem value="4">4. Sınıf</SelectItem>
+              <SelectItem value="5+">5+ Sınıf</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="mb-4">
