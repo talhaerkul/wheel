@@ -165,6 +165,7 @@ export default function Home() {
 
       <div className="flex justify-center space-x-4 mb-8">
         <Button
+          className="flex items-center"
           onClick={() => handleSocialFollow("instagram")}
           disabled={instagramFollowed}
         >
@@ -172,6 +173,7 @@ export default function Home() {
           {instagramFollowed ? "Takip Edildi" : "Instagram'da Takip Et"}
         </Button>
         <Button
+          className="flex items-center"
           onClick={() => handleSocialFollow("linkedin")}
           disabled={linkedinFollowed}
         >
