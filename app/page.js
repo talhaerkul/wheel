@@ -15,7 +15,6 @@ export default function Home() {
   const [linkedinFollowed, setLinkedinFollowed] = useState(false);
   const [prizes, setPrizes] = useState([]);
   const [canSpin, setCanSpin] = useState(false);
-  const [isSpinned, setIsSpinned] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupContent, setPopupContent] = useState({ type: "", url: "" });
   const [users, setUsers] = useState([]);
@@ -64,8 +63,8 @@ export default function Home() {
   const handleSocialFollow = (type) => {
     const url =
       type === "instagram"
-        ? "https://www.instagram.com/ttalhaerkul"
-        : "https://www.linkedin.com/in/talhaerkul";
+        ? "https://www.instagram.com"
+        : "https://www.linkedin.com";
 
     window.open(url, "_blank", "noopener,noreferrer");
     setPopupContent({ type, url });

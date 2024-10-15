@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -29,6 +30,7 @@ export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [newPrize, setNewPrize] = useState({ name: "", priority: 1 });
   const [showOnlyFollowers, setShowOnlyFollowers] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -93,16 +95,22 @@ export default function AdminPage() {
     });
     if (response.ok) {
       fetchUsers();
-      toast({
-        title: "Kullanıcı güncellendi",
-        description: "Kullanıcı bilgileri başarıyla güncellendi.",
-      });
     }
   };
 
-  const filteredUsers = showOnlyFollowers
-    ? users.filter((user) => user.instaFollow || user.linkedinFollow)
-    : users;
+  const filteredUsers = users
+    .filter(
+      (user) => !showOnlyFollowers || user.instaFollow || user.linkedinFollow
+    )
+    .filter(
+      (user) =>
+        searchTerm === "" ||
+        user.prize.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.instagramUsername
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase()) ||
+        user.linkedinUsername.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   if (!isLoggedIn) {
     return <Login onLogin={setIsLoggedIn} />;
@@ -177,6 +185,16 @@ export default function AdminPage() {
 
       <div>
         <h2 className="text-2xl font-bold mb-4">Kullanıcılar</h2>
+        <div className="mb-4">
+          <Label htmlFor="search">Ara</Label>
+          <Input
+            id="search"
+            type="text"
+            placeholder="Ödül adı, Instagram veya LinkedIn kullanıcı adı"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <div className="flex justify-between items-center mb-4">
           <Button onClick={updateFollowers}>Takipçileri Güncelle</Button>
           <div className="flex items-center space-x-2">
@@ -197,7 +215,6 @@ export default function AdminPage() {
               <TableHead>Ödül</TableHead>
               <TableHead>Instagram Takip</TableHead>
               <TableHead>LinkedIn Takip</TableHead>
-              <TableHead>İşlem</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -276,25 +293,12 @@ export default function AdminPage() {
                     </SelectContent>
                   </Select>
                 </TableCell>
-                <TableCell>
-                  <Button
-                    onClick={() =>
-                      updateUser(
-                        user.id,
-                        user.prize,
-                        user.instaFollow,
-                        user.linkedinFollow
-                      )
-                    }
-                  >
-                    Güncelle
-                  </Button>
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+      <Toaster />
     </div>
   );
 }
