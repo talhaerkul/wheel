@@ -40,20 +40,20 @@ export default function AdminPage() {
   }, [isLoggedIn]);
 
   const fetchPrizes = async () => {
-    const response = await fetch("/api/prizes");
+    const response = await fetch("https://generatech.app/wheel/api/prizes");
     const data = await response.json();
     setPrizes(data);
   };
 
   const fetchUsers = async () => {
-    const response = await fetch("/api/users");
+    const response = await fetch("https://generatech.app/wheel/api/users");
     const data = await response.json();
     setUsers(data);
   };
 
   const addPrize = async (event) => {
     event.preventDefault();
-    const response = await fetch("/api/prizes", {
+    const response = await fetch("https://generatech.app/wheel/api/prizes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newPrize),
@@ -69,7 +69,10 @@ export default function AdminPage() {
   };
 
   const deletePrize = async (id) => {
-    const response = await fetch(`/api/prizes/${id}`, { method: "DELETE" });
+    const response = await fetch(
+      `https://generatech.app/wheel/api/prizes/${id}`,
+      { method: "DELETE" }
+    );
     if (response.ok) {
       fetchPrizes();
       toast({
@@ -88,11 +91,14 @@ export default function AdminPage() {
   };
 
   const updateUser = async (id, prize, instaFollow, linkedinFollow) => {
-    const response = await fetch(`/api/users/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prize, instaFollow, linkedinFollow }),
-    });
+    const response = await fetch(
+      `https://generatech.app/wheel/api/users/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prize, instaFollow, linkedinFollow }),
+      }
+    );
     if (response.ok) {
       fetchUsers();
     }

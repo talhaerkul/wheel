@@ -38,13 +38,13 @@ export default function Home() {
   ]);
 
   const fetchPrizes = async () => {
-    const response = await fetch("/api/prizes");
+    const response = await fetch("https://generatech.app/wheel/api/prizes");
     const data = await response.json();
     setPrizes(data);
   };
 
   const fetchUsers = async () => {
-    const response = await fetch("/api/users");
+    const response = await fetch("https://generatech.app/wheel/api/users");
     const data = await response.json();
     setUsers(data);
   };
@@ -95,7 +95,7 @@ export default function Home() {
   };
 
   const handleSpin = async (prize) => {
-    await fetch("/api/users", {
+    await fetch("https://generatech.app/wheel/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
