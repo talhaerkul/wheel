@@ -1,12 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import SpinningWheel from "@/components/SpinningWheel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Instagram, Linkedin, X } from "lucide-react";
-import SpinningWheel from "@/components/SpinningWheel";
-import { motion } from "framer-motion";
 import {
   Select,
   SelectContent,
@@ -14,6 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { motion } from "framer-motion";
+import { Instagram, Linkedin, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [name, setName] = useState("");
@@ -159,8 +159,8 @@ export default function Home() {
         Çark Çevir ve Kazan!
       </h1>
 
-      <div className="max-w-md mx-auto mb-8">
-        <div className="mb-4">
+      <div className="max-w-lg grid grid-cols-2 gap-4 mx-auto mb-8">
+        <div className="mx-2">
           <Label htmlFor="name">Ad</Label>
           <Input
             id="name"
@@ -170,7 +170,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mx-2">
           <Label htmlFor="surname">Soyad</Label>
           <Input
             id="surname"
@@ -180,7 +180,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mb-4">
+        <div className="mx-2">
           <Label htmlFor="phone">Telefon</Label>
           <Input
             id="phone"
@@ -195,7 +195,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="mb-4">
+        <div className="mx-2">
           <Label htmlFor="email">E-posta</Label>
           <Input
             id="email"
@@ -211,7 +211,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="mb-4">
+        <div className="mx-2">
           <Label htmlFor="department">Bölüm</Label>
           <Input
             id="department"

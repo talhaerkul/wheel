@@ -180,7 +180,7 @@ export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
               }
         }
       >
-        {isSpinning ? "Spinning..." : "Spin the Wheel!"}
+        {isSpinning ? "Çark Dönüyor..." : "Çarkı Çevir"}
       </motion.button>
 
       <AnimatePresence>
