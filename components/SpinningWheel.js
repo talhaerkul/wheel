@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { X } from "lucide-react";
 
-export default function SpinningWheel({ prizes }) {
+export default function SpinningWheel({ prizes, canSpin, onSpinEnd }) {
   const canvasRef = useRef(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [angle, setAngle] = useState(0);
   const [showModal, setShowModal] = useState(false);
-  const [winningPrize, setWinningPrize] = useState("");
+  const [winningPrize, setWinningPrize] = useState(null);
 
   const colors = prizes.map((_, index) => {
     const hue = (index * 360) / prizes.length;
@@ -93,7 +93,7 @@ export default function SpinningWheel({ prizes }) {
   }, [angle]);
 
   const spinWheel = () => {
-    if (isSpinning) return;
+    if (isSpinning || !canSpin) return;
     setIsSpinning(true);
 
     const duration = 5000;
@@ -118,7 +118,8 @@ export default function SpinningWheel({ prizes }) {
         const numOptions = prizes.length;
         const arcSize = 360 / numOptions;
         const index = Math.floor(((360 - degrees) % 360) / arcSize);
-        setWinningPrize(prizes[index].name);
+        const prize = prizes[index];
+        setWinningPrize(prize);
         setShowModal(true);
 
         confetti({
@@ -126,6 +127,8 @@ export default function SpinningWheel({ prizes }) {
           spread: 70,
           origin: { y: 0.6 },
         });
+
+        onSpinEnd(prize);
       }
     };
 
@@ -145,9 +148,9 @@ export default function SpinningWheel({ prizes }) {
       </div>
       <motion.button
         onClick={spinWheel}
-        disabled={isSpinning}
+        disabled={isSpinning || !canSpin}
         className={`mt-8 px-8 py-3 bg-blue-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 ${
-          isSpinning ? "opacity-50 cursor-not-allowed" : ""
+          isSpinning || !canSpin ? "opacity-50 cursor-not-allowed" : ""
         }`}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -184,14 +187,13 @@ export default function SpinningWheel({ prizes }) {
                 <X size={24} />
               </button>
               <h2 className="text-2xl font-bold mb-4 text-center">
-                Congratulations!
+                Tebrikler!
               </h2>
               <p className="text-lg text-center">
-                You won{" "}
+                Kazandığınız ödül:{" "}
                 <span className="font-semibold text-green-500">
-                  {winningPrize}
+                  {winningPrize?.name}
                 </span>
-                !
               </p>
             </motion.div>
           </motion.div>

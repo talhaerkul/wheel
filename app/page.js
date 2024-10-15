@@ -1,115 +1,217 @@
 "use client";
 
-import { useState } from "react";
-import SpinningWheel from "../components/SpinningWheel";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Instagram, Linkedin, X } from "lucide-react";
+import SpinningWheel from "@/components/SpinningWheel";
 
 export default function Home() {
+  const [name, setName] = useState("");
+  const [instagramUsername, setInstagramUsername] = useState("");
+  const [linkedinUsername, setLinkedinUsername] = useState("");
+  const [instagramFollowed, setInstagramFollowed] = useState(false);
+  const [linkedinFollowed, setLinkedinFollowed] = useState(false);
   const [prizes, setPrizes] = useState([]);
-  const [prizeName, setPrizeName] = useState("");
-  const [error, setError] = useState("");
+  const [canSpin, setCanSpin] = useState(false);
+  const [isSpinned, setIsSpinned] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupContent, setPopupContent] = useState({ type: "", url: "" });
+  const [users, setUsers] = useState([]);
+  const [errors, setErrors] = useState({ instagram: "", linkedin: "" });
 
-  const sendResultToBackend = async (prize) => {
-    try {
-      const response = await fetch("/api/wheel-result", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          instagramUsername,
-          linkedinUsername,
-          prize: prize.name,
-        }),
-      });
-      if (!response.ok) throw new Error("Failed to send result to backend");
-    } catch (error) {
-      console.error("Error sending result to backend:", error);
+  useEffect(() => {
+    fetchPrizes();
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    updateCanSpin();
+  }, [
+    name,
+    instagramUsername,
+    linkedinUsername,
+    instagramFollowed,
+    linkedinFollowed,
+    errors,
+  ]);
+
+  const fetchPrizes = async () => {
+    const response = await fetch("/api/prizes");
+    const data = await response.json();
+    setPrizes(data);
+  };
+
+  const fetchUsers = async () => {
+    const response = await fetch("/api/users");
+    const data = await response.json();
+    setUsers(data);
+  };
+
+  const updateCanSpin = () => {
+    setCanSpin(
+      name.trim() !== "" &&
+        instagramUsername.trim() !== "" &&
+        linkedinUsername.trim() !== "" &&
+        instagramFollowed &&
+        linkedinFollowed &&
+        !errors.instagram &&
+        !errors.linkedin
+    );
+  };
+
+  const handleSocialFollow = (type) => {
+    const url =
+      type === "instagram"
+        ? "https://www.instagram.com/ttalhaerkul"
+        : "https://www.linkedin.com/in/talhaerkul";
+
+    window.open(url, "_blank", "noopener,noreferrer");
+    setPopupContent({ type, url });
+    setShowPopup(true);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+    if (popupContent.type === "instagram") {
+      setInstagramFollowed(true);
+    } else if (popupContent.type === "linkedin") {
+      setLinkedinFollowed(true);
     }
   };
 
-  const addPrize = (e) => {
-    e.preventDefault();
-    if (prizeName.trim() === "") {
-      setError("Prize name cannot be empty");
-      return;
-    }
-    if (
-      prizes.some(
-        (prize) => prize.name.toLowerCase() === prizeName.trim().toLowerCase()
-      )
-    ) {
-      setError("Prize already exists");
-      return;
-    }
-    setPrizes([...prizes, { name: prizeName.trim() }]);
-    setPrizeName("");
-    setError("");
+  const handleInputChange = (setter, value, type) => {
+    setter(value);
+    const existingUser = users.find((user) =>
+      type === "instagram"
+        ? user.instagramUsername === value
+        : user.linkedinUsername === value
+    );
+    setErrors((prev) => ({
+      ...prev,
+      [type]: existingUser ? `Bu ${type} kullanıcı adı zaten kullanılmış` : "",
+    }));
   };
 
-  const removePrize = (index) => {
-    setPrizes(prizes.filter((_, i) => i !== index));
-  };
-
-  const clearPrizes = () => {
-    setPrizes([]);
+  const handleSpin = async (prize) => {
+    await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        instagramUsername,
+        linkedinUsername,
+        prize: prize.name,
+        instaFollow: instagramFollowed,
+        linkedinFollow: linkedinFollowed,
+      }),
+    });
+    setCanSpin(false);
+    fetchUsers();
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
-      <h1 className="text-4xl font-bold mb-8 text-blue-600">
-        Spinning Wheel of Prizes
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Çark Çevir ve Kazan!
       </h1>
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 mb-8">
-        <form onSubmit={addPrize} className="mb-4">
-          <div className="flex mb-2">
-            <input
-              type="text"
-              placeholder="Enter prize name"
-              value={prizeName}
-              onChange={(e) => setPrizeName(e.target.value)}
-              className="flex-grow border rounded-l px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Add Prize
-            </button>
-          </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-        </form>
+
+      <div className="max-w-md mx-auto mb-8">
         <div className="mb-4">
-          <h2 className="text-lg font-semibold mb-2">Prize List:</h2>
-          {prizes.length === 0 ? (
-            <p className="text-gray-500">No prizes added yet.</p>
-          ) : (
-            <ul className="list-disc pl-5">
-              {prizes.map((prize, index) => (
-                <li
-                  key={index}
-                  className="flex justify-between items-center mb-1"
-                >
-                  <span>{prize.name}</span>
-                  <button
-                    onClick={() => removePrize(index)}
-                    className="text-red-500 hover:text-red-700 focus:outline-none"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
+          <Label htmlFor="name">İsim</Label>
+          <Input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <Label htmlFor="instagram">Instagram Kullanıcı Adı</Label>
+          <Input
+            id="instagram"
+            value={instagramUsername}
+            onChange={(e) =>
+              handleInputChange(
+                setInstagramUsername,
+                e.target.value,
+                "instagram"
+              )
+            }
+            required
+          />
+          {errors.instagram && (
+            <p className="text-red-500 text-sm mt-1">{errors.instagram}</p>
           )}
         </div>
-        {prizes.length > 0 && (
-          <button
-            onClick={clearPrizes}
-            className="w-full bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Clear All Prizes
-          </button>
-        )}
+
+        <div className="mb-4">
+          <Label htmlFor="linkedin">LinkedIn Kullanıcı Adı</Label>
+          <Input
+            id="linkedin"
+            value={linkedinUsername}
+            onChange={(e) =>
+              handleInputChange(setLinkedinUsername, e.target.value, "linkedin")
+            }
+            required
+          />
+          {errors.linkedin && (
+            <p className="text-red-500 text-sm mt-1">{errors.linkedin}</p>
+          )}
+        </div>
       </div>
-      {prizes.length > 1 && <SpinningWheel prizes={prizes} />}
+
+      <div className="flex justify-center space-x-4 mb-8">
+        <Button
+          onClick={() => handleSocialFollow("instagram")}
+          disabled={instagramFollowed}
+        >
+          <Instagram className="mr-2 h-4 w-4" />
+          {instagramFollowed ? "Takip Edildi" : "Instagram'da Takip Et"}
+        </Button>
+        <Button
+          onClick={() => handleSocialFollow("linkedin")}
+          disabled={linkedinFollowed}
+        >
+          <Linkedin className="mr-2 h-4 w-4" />
+          {linkedinFollowed ? "Takip Edildi" : "LinkedIn'de Takip Et"}
+        </Button>
+      </div>
+
+      {prizes.length > 0 && (
+        <SpinningWheel
+          prizes={prizes}
+          canSpin={canSpin}
+          onSpinEnd={handleSpin}
+        />
+      )}
+
+      {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl relative">
+            <Button
+              className="absolute top-2 right-2"
+              variant="ghost"
+              size="icon"
+              onClick={closePopup}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+            <h2 className="text-xl font-bold mb-4">
+              {popupContent.type === "instagram" ? "Instagram" : "LinkedIn"}'de
+              Takip Et
+            </h2>
+            <p className="mb-4">
+              Yeni açılan sekmede bizi takip ettiyseniz, lütfen onaylayın.
+            </p>
+            <Button className="w-full" onClick={closePopup}>
+              Takip Ettim
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
