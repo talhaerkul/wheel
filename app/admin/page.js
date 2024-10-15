@@ -23,6 +23,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import Image from "next/image";
 
 export default function AdminPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -236,6 +237,7 @@ export default function AdminPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>Fotoğraf</TableHead>
               <TableHead>Ad Soyad</TableHead>
               <TableHead>Telefon</TableHead>
               <TableHead>E-posta</TableHead>
@@ -251,6 +253,17 @@ export default function AdminPage() {
           <TableBody>
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
+                <TableCell>
+                  {user.imageUrl && (
+                    <Image
+                      src={user.imageUrl}
+                      alt={`${user.name}'s photo`}
+                      width={50}
+                      height={50}
+                      className="rounded-full object-cover"
+                    />
+                  )}
+                </TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.phone}</TableCell>
                 <TableCell>{user.email}</TableCell>
