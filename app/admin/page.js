@@ -277,7 +277,7 @@ export default function AdminPage() {
                   {user.image && (
                     <Image
                       src={user.image}
-                      alt={`${user.name}'s photo`}
+                      alt={`${user.image}`}
                       width={50}
                       height={50}
                       className="rounded-full object-cover"
