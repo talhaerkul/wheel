@@ -220,7 +220,6 @@ export default function Home() {
       const blob = await response.blob();
       const formData = new FormData();
       formData.append("image", blob, file.name);
-      setUploadedImage(dataURL);
       const result = await fetch("https://generatech.app/image/upload", {
         method: "POST",
         body: formData,
@@ -233,6 +232,7 @@ export default function Home() {
       });
       const data = await result.json();
       setImage(data.data.image);
+      setUploadedImage(dataURL);
       toast({
         title: "Upload successful",
         description: "Your image has been uploaded.",
