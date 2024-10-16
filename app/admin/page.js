@@ -274,9 +274,9 @@ export default function AdminPage() {
             {filteredUsers.map((user) => (
               <TableRow key={user.id}>
                 <TableCell>
-                  {user.imageUrl && (
+                  {user.image && (
                     <Image
-                      src={user.imageUrl}
+                      src={user.image}
                       alt={`${user.name}'s photo`}
                       width={50}
                       height={50}

@@ -20,6 +20,7 @@ import { useEffect, useState, useRef } from "react";
 export default function Home() {
   const { toast } = useToast();
   const [name, setName] = useState("");
+  const [image, setImage] = useState("");
   const [surname, setSurname] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -154,6 +155,7 @@ export default function Home() {
         prize: prize.name,
         instaFollow: instagramFollowed,
         linkedinFollow: linkedinFollowed,
+        image,
       }),
     });
     setCanSpin(false);
@@ -222,8 +224,13 @@ export default function Home() {
       const result = await fetch("https://generatech.app/image/upload", {
         method: "POST",
         body: formData,
+        headers: {
+          token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDA4Y2UyMmQ0MWMwNmY1MTE5ZGQ4NSIsImlhdCI6MTcyNjMzMzg1M30.9RbsvOmzelQvPqQWG099TKEw_MWv5ZecOx",
+        },
       });
-
+      const data = await result.json();
+      setImage(data.data.image);
       toast({
         title: "Upload successful",
         description: "Your image has been uploaded.",
