@@ -209,7 +209,7 @@ export default function Home() {
   const uploadImage = async (file) => {
     try {
       // Simulating image upload
-      // In a real scenario, you would send the file to your server here
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const dataURL = URL.createObjectURL(file);
