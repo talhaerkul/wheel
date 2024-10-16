@@ -8,6 +8,9 @@ const nextConfig = {
     }
     return config;
   },
+  images: {
+    domains: ["generatech-images.s3.us-west-2.amazonaws.com"],
+  },
 };
 
 export default nextConfig;
