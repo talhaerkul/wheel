@@ -226,7 +226,7 @@ export default function Home() {
         body: formData,
         headers: {
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDA4Y2UyMmQ0MWMwNmY1MTE5ZGQ4NSIsImlhdCI6MTcyNjMzMzg1M30.9RbsvOmzelQvPqQWG099TKEw_MWv5ZecOx",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZDA4Y2UyMmQ0MWMwNmY1MTE5ZGQ4NSIsImlhdCI6MTcyNjMzMzg1M30.9RbsvOmzelQvPqQWG099TKEw_MWv5ZecOxM4MtuTaYM",
         },
       });
       const data = await result.json();
