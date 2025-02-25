@@ -392,7 +392,7 @@ export default function Home() {
 
         <div className="max-w-lg mx-auto mt-8 p-6 border rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-4 text-center">
-            Standı ziyaret et ve ayna ile fotoğraf çekil
+            Etkinlikten bir fotoğraf
           </h2>
           <div className="space-y-4">
             <div
